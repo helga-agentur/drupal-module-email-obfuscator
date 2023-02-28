@@ -1,0 +1,5 @@
+services:
+  email_obfuscator.middleware:
+    class: Drupal\email_obfuscator\EmailObfuscatorMiddleware
+    tags:
+      - { name: http_middleware, priority: 1000 }
