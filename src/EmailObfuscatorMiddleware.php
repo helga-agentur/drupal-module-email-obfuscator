@@ -4,6 +4,7 @@ namespace Drupal\email_obfuscator;
 
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 
 /**
@@ -33,7 +34,7 @@ class EmailObfuscatorMiddleware implements HttpKernelInterface {
   /**
    * {@inheritdoc}
    */
-  public function handle(Request $request, $type = self::MASTER_REQUEST, $catch = TRUE) {
+    public function handle(Request $request, int $type = self::MAIN_REQUEST, bool $catch = true): Response {
     $response = $this->httpKernel->handle($request, $type, $catch);
 
     try {
