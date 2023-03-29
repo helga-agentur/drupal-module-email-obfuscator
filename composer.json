@@ -1,0 +1,14 @@
+{
+    "name": "joinbox/email-obfuscator",
+    "description": "Obfuscate emails any and everywhere",
+    "type": "drupal-module",
+    "license": "GPL-2.0-or-later",
+    "authors": [
+        {
+            "name": "Hudson Muff",
+            "email": "hudson@joinbox.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {}
+}
