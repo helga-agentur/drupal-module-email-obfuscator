@@ -39,7 +39,8 @@ class EmailObfuscatorMiddleware implements HttpKernelInterface {
 
         try {
             if ($content = $response->getContent()) {
-                if ($obfuscateEmails = $this->obfuscateEmails($content)) {
+                // don't obfuscate emails in backoffice
+                if (!\Drupal::service('router.admin_context')->isAdminRoute() && $obfuscateEmails = $this->obfuscateEmails($content)) {
                     $response->setContent($obfuscateEmails);
                 }
             }
