@@ -51,39 +51,45 @@ class EmailObfuscatorMiddleware implements HttpKernelInterface {
   }
 
   /**
-   * Remove emails from mailto links and reverse the emails so bots can't read them - hopefully.
+   * Revert emails in mailto-links and add a display-none-span in the email-texts so bots can't read them - hopefully.
    * https://web.archive.org/web/20180908103745/http://techblog.tilllate.com/2008/07/20/ten-methods-to-obfuscate-e-mail-addresses-compared/
-   *
+   *http://jasonpriem.com/obfuscation-decoder/
+     *
    * @param string $content
    *
    * @return string The processed string
    * @throws \Exception
    */
   private function obfuscateEmails(string $content): string {
-    // remove mailto links and replace with onclick rereverse method
-    $mailtoRegex = '/(href=)"mailto:[^"]+"/';
+    // here we find the mailto links, revert them and add onclick which reverts mailto-link back to normal
+    $mailtoRegex = '/(href=)"mailto:([^"]+)"/';
 
-    $obfuscatedContent = preg_replace(
+    $obfuscatedContent = preg_replace_callback(
       $mailtoRegex,
-      "$1\"#\" onclick='this.href=`mailto:` + this.querySelector(`span`).textContent.split(``).reverse().join(``)'",
+      function ($matches) {
+                return $matches[1] . "\"mailto:" . strrev($matches[2]) . "\" onclick=\"this.href='mailto:' + this.getAttribute('href').substr(7).split('').reverse().join('')\"";
+            },
       $content
-    );
+    )?? throw new \Exception('Removing mailtos with regex and adding onclick to email links failed.');
 
-    if (!$obfuscatedContent) {
-      throw new \Exception('Removing mailtos with regex and adding onclick to email links failed.');
-    }
+    // exclamation marks are invalid in emails. we use them as delimiters, so we don't replace unwanted parts of the email
+    $stringToReplace = "!zilch!";
 
-    // css reverse all emails and show correctly by changing the text direction
-    $emailRegex = '/([\w\.\+\-]+@[\w\-\.]+\.[a-zA-Z]{2,})/';
+    // get all emails with optional selector for email texts in placeholder or mailto
+    $emailRegex = '/(placeholder=\"|mailto:)?([\w\.\+\-]+@)([\w\-\.]+\.[a-zA-Z]{2,})/';
 
     return preg_replace_callback(
       $emailRegex,
-      function ($matches) {
-        return "<span style='unicode-bidi:bidi-override;direction:rtl'>" . strrev(
-            $matches[0]
-          ) . "</span>";
+      function ($matches) use ($stringToReplace){
+        if (!empty($matches[1])) {
+                    // if the email is in a mailto-link or placeholder don't do anything
+            return $matches[0];
+          } else {
+                    // otherwise add the display none text
+                    return $matches[2] . "<span style='display:none'>" . $stringToReplace . "</span>" . $matches[3];
+                }
       },
       $obfuscatedContent
-    ) ?? throw new \Exception('CSS reversing emails failed.');
+    ) ?? throw new \Exception('Adding display-none-span failed.');
   }
 }
