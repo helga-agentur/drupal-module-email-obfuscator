@@ -38,8 +38,11 @@ class EmailObfuscatorMiddleware implements HttpKernelInterface {
 
     try {
       if ($content = $response->getContent()) {
+        $routes = \Drupal::service('router.no_access_checks')->matchRequest($request);
+        $isAdminPath = \Drupal::service('router.admin_context')->isAdminRoute($routes['_route_object']);
+        $inBackofficeEditor = ($routes['_route'] == 'editor.link_dialog');
         // don't obfuscate emails in backoffice
-                if (!\Drupal::service('router.admin_context')->isAdminRoute() &&$obfuscateEmails = $this->obfuscateEmails($content)) {
+        if (!$isAdminPath && !$inBackofficeEditor &&$obfuscateEmails = $this->obfuscateEmails($content)) {
           $response->setContent($obfuscateEmails);
         }
       }
@@ -76,7 +79,7 @@ class EmailObfuscatorMiddleware implements HttpKernelInterface {
     $stringToReplace = "!zilch!";
 
     // get all emails with optional selector for email texts in placeholder or mailto
-    $emailRegex = '/(placeholder=\"|mailto:)?([\w\.\+\-]+@)([\w\-\.]+\.[a-zA-Z]{2,})/';
+    $emailRegex = '/(placeholder=\"|mailto:|href=\")?([\w\.\+\-]+@)([\w\-\.]+\.[a-zA-Z]{2,})/';
 
     return preg_replace_callback(
       $emailRegex,
