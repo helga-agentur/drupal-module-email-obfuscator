@@ -75,13 +75,13 @@ class EmailObfuscatorMiddleware implements HttpKernelInterface {
         // exclamation marks are invalid in emails. we use them as delimiters, so we don't replace unwanted parts of the email
         $stringToReplace = "!zilch!";
 
-        // get all emails with optional selector for email texts inside a tag (i.e. value of an attribute) or after a mailto
-        $emailRegex = '/(?<!<[^>]*|mailto:)?([\w\.\+\-]+@)([\w\-\.]+\.[a-zA-Z]{2,})/';
+        // get all emails with optional selector for email texts inside a tag (i.e. value of an attribute)
+        $emailRegex = '/(?<!<[^>]*)?([\w\.\+\-]+@)([\w\-\.]+\.[a-zA-Z]{2,})/';
         return preg_replace_callback(
             $emailRegex,
             function ($matches) use ($stringToReplace) {
                 if (!empty($matches[1])) {
-                    // if the email is in a mailto-link or html-attribute don't do anything
+                    // if the email is in a html-attribute don't do anything
                     return $matches[0];
                 } else {
                     // otherwise add the display none text
