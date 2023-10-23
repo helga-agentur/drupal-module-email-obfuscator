@@ -2,6 +2,7 @@
 
 namespace Drupal\email_obfuscator;
 
+use Drupal\Core\Site\Settings;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 
@@ -40,8 +41,10 @@ class EmailObfuscatorMiddleware implements HttpKernelInterface {
         $routes = \Drupal::service('router.no_access_checks')->matchRequest($request);
         $isAdminPath = \Drupal::service('router.admin_context')->isAdminRoute($routes['_route_object']);
         $inBackofficeEditor = ($routes['_route'] == 'editor.link_dialog');
+        $whitelist = Settings::get('email-obfuscator')['whitelist'] ?? [];
+        $isWhitelisted = in_array($routes['_route'], $whitelist);
         // don't obfuscate emails in backoffice
-        if (!$isAdminPath && !$inBackofficeEditor && $obfuscateEmails = $this->emailObfuscatorService->obfuscateEmails(
+        if (!$isAdminPath && !$inBackofficeEditor && !$isWhitelisted && $obfuscateEmails = $this->emailObfuscatorService->obfuscateEmails(
             $content
           )) {
           $response->setContent($obfuscateEmails);
