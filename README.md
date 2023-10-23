@@ -14,3 +14,11 @@ Drupal Email Obfuscator Module is used to search everywhere and obfuscate all em
 
 - Everything in the backoffice
 - Emails in placeholder of an input
+- Define whitelisted (excluded) routes in settings.php
+  ```php
+  $settings['email-obfuscator'] = [
+    'whitelist' => [
+      'rest.api_layout_footer.GET'
+    ]
+  ];
+  ```
