@@ -1,21 +1,29 @@
 # Drupal Module Email Obfuscator
 
-Drupal Email Obfuscator Module is used to search everywhere and obfuscate all emails within Drupal using a Middleware.
+The Drupal Email Obfuscator Module uses a middleware get rendered content from each request. The content is searched for
+emails with regexs. The emails are obfuscated depending on where the text is found.
 
-## What is obfuscated and how
+## Obfuscations
 
-- Emails in a `<a href=mailto:`:
-    - the email after `mailto:` is reverted
-    - an onclick is added that re-reverts the email after the `mailto:`
-- For all other emails (e.g. text content in an `<a>`):
-    - A span with `display:none` containing a text with delimiters that are invalid email characters is added after
-      the @
+### Emails in a Mailto-Link
+
+Example: `<a href="mailto:test@email.com">`
+
+- The email string excluding `mailto:` is reversed
+- An onclick is added that re-reverses the email after the `mailto:`
+
+### All other Emails
+
+Example: `<a>test@email.com</a>`
+
+- A span with `display:none` containing a text with delimiters that are invalid email characters is added in the middle
+  of the email
 
 ## Exclusions
 
-- Everything in the backoffice
-- Emails in placeholder of an input
-- Content in routes that are whitelisted
+- Everything in the backoffice (admin pages)
+- Emails in HTML-attributes (placeholder for input fields)
+- Content in routes that are whitelisted (see below)
 
 ### Whitelisting Routes
 
