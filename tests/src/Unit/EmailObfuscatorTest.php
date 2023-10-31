@@ -6,7 +6,7 @@ use Drupal\email_obfuscator\EmailObfuscatorService;
 use Drupal\Tests\UnitTestCase;
 
 /**
- * Test description.
+ * Test mainly regexes.
  *
  * @group email_obfuscator
  */
@@ -64,6 +64,20 @@ class EmailObfuscatorTest extends UnitTestCase {
   public function testEmailInMailtoHrefWithSpace() {
     $content = '<a href="mailto: test@ email.com ">';
     $this->assertEquals($content, $this->emailObfuscatorService->obfuscateEmails($content));
+  }
+
+  public function testEmailsWildlyInsideHtmlElements() {
+    $content = "<div test@email.com>test@email.com</div>";
+    $this->assertEquals("<div test@email.com>test@<span style='display:none'>!zilch!</span>email.com</div>", $this->emailObfuscatorService->obfuscateEmails($content));
+
+    $content = "<div test@email.com>asdf test@email.com</div>";
+    $this->assertEquals("<div test@email.com>asdf test@<span style='display:none'>!zilch!</span>email.com</div>", $this->emailObfuscatorService->obfuscateEmails($content));
+
+    $content = "<div test@email.com test@email.com>asdf test@email.com</div test@email.com>";
+    $this->assertEquals("<div test@email.com test@email.com>asdf test@<span style='display:none'>!zilch!</span>email.com</div test@email.com>", $this->emailObfuscatorService->obfuscateEmails($content));
+
+    $content = "<div test@email.com><br/>asdf test@email.com</div test@email.com>";
+    $this->assertEquals("<div test@email.com><br/>asdf test@<span style='display:none'>!zilch!</span>email.com</div test@email.com>", $this->emailObfuscatorService->obfuscateEmails($content));
   }
 
 }
