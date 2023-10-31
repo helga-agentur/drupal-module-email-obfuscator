@@ -40,11 +40,11 @@ class EmailObfuscatorMiddleware implements HttpKernelInterface {
       if ($content = $response->getContent()) {
         $routes = \Drupal::service('router.no_access_checks')->matchRequest($request);
         $isAdminPath = \Drupal::service('router.admin_context')->isAdminRoute($routes['_route_object']);
-        $inBackofficeEditor = ($routes['_route'] == 'editor.link_dialog');
-        $whitelist = Settings::get('email-obfuscator')['whitelist'] ?? [];
+        $whitelist = Settings::get('email_obfuscator')['route_whitelist'] ?? [];
         $isWhitelisted = in_array($routes['_route'], $whitelist);
-        // don't obfuscate emails in backoffice
-        if (!$isAdminPath && !$inBackofficeEditor && !$isWhitelisted && $obfuscateEmails = $this->emailObfuscatorService->obfuscateEmails(
+
+        // don't obfuscate emails in backoffice or on whitelisted routes
+        if (!$isAdminPath && !$isWhitelisted && $obfuscateEmails = $this->emailObfuscatorService->obfuscateEmails(
             $content
           )) {
           $response->setContent($obfuscateEmails);
