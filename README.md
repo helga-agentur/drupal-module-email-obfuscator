@@ -21,6 +21,7 @@ Example: `<a>test@email.com</a>`
 
 ## Exclusions
 
+- Any email that is invalid (according to PHP's `filter_var` function)
 - Everything in the backoffice (admin pages)
 - Emails inside HTML-attributes (placeholder for input fields)
 - Content in routes that are whitelisted (see below)

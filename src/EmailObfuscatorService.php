@@ -27,6 +27,8 @@ class EmailObfuscatorService {
   /**
    * Find the mailto links, revert them and add onclick which reverts mailto-link back to normal.
    *
+   * Invalid emails are ignored.
+   *
    * @param string $content
    *
    * @return string
@@ -38,6 +40,11 @@ class EmailObfuscatorService {
     return preg_replace_callback(
       $mailtoRegex,
       function ($matches) {
+        // if the email is invalid, don't do anything
+        if (!filter_var($matches[2], FILTER_VALIDATE_EMAIL)) {
+          return $matches[0];
+        }
+
         return $matches[1] . "\"mailto:" . strrev(
             $matches[2]
           ) . "\" onclick=\"this.href='mailto:' + this.getAttribute('href').substr(7).split('').reverse().join('')\"";
@@ -50,6 +57,8 @@ class EmailObfuscatorService {
 
   /**
    * Get all email strings that are not in an HTML element and add a display-none-span in the middle of the string.
+   *
+   * Invalid emails are ignored.
    *
    * @param string $content
    * @param string $displayNoneText
@@ -68,7 +77,7 @@ class EmailObfuscatorService {
       $emailRegex,
       function ($matches) use ($stringToReplace) {
         // if the email is in an HTML element or if the email is invalid, don't do anything
-        if (!empty($matches[1])) {
+        if (!empty($matches[1]) || !filter_var($matches[2], FILTER_VALIDATE_EMAIL)) {
           return $matches[0];
         }
 
