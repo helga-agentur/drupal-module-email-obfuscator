@@ -25,7 +25,8 @@ class EmailObfuscatorService {
   }
 
   /**
-   * Find the mailto links, revert them and add onclick which reverts mailto-link back to normal.
+   * Find the mailto links, revert them and add onclick which reverts mailto-link back to normal. But only on the first
+   * click.
    *
    * Invalid emails are ignored.
    *
@@ -45,9 +46,10 @@ class EmailObfuscatorService {
           return $matches[0];
         }
 
+        // the dataset.obfuscated is used to check if the link has already been reverted
         return $matches[1] . "\"mailto:" . strrev(
             $matches[2]
-          ) . "\" onclick=\"this.href='mailto:' + this.getAttribute('href').substr(7).split('').reverse().join('')\"";
+          ) . "\" onclick=\"!this.dataset.obfuscated && (this.dataset.obfuscated = true) && this.setAttribute('href', 'mailto:' + this.getAttribute('href').substring(7).split('').reverse().join(''))\"";
       },
       $content
     ) ?? throw new \Exception(

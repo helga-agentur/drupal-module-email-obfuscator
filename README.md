@@ -12,6 +12,8 @@ Example: `<a href="mailto:test@email.com">`
 - The email string excluding `mailto:` is reversed
 - An onclick is added that re-reverses the email after the `mailto:`
 
+_The onclick-re-reverse is only done once in order to avoid reversing back to the reversed email_
+
 ### All other Emails
 
 Example: `<a>test@email.com</a>`

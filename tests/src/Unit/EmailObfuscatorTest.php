@@ -41,7 +41,7 @@ class EmailObfuscatorTest extends UnitTestCase {
     $content = '<a href="mailto:test@email.com">';
 
     $this->assertEquals(
-      '<a href="mailto:moc.liame@tset" onclick="this.href=\'mailto:\' + this.getAttribute(\'href\').substr(7).split(\'\').reverse().join(\'\')">',
+      '<a href="mailto:moc.liame@tset" onclick="!this.dataset.obfuscated && (this.dataset.obfuscated = true) && this.setAttribute(\'href\', \'mailto:\' + this.getAttribute(\'href\').substring(7).split(\'\').reverse().join(\'\'))">',
       $this->emailObfuscatorService->obfuscateEmails($content)
     );
   }
