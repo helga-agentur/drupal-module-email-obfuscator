@@ -6,6 +6,8 @@ use Drupal\Core\Site\Settings;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
+use Symfony\Component\Routing\Exception\MethodNotAllowedException;
+use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 
 /**
  * EmailObfuscatorMiddleware middleware.
@@ -50,7 +52,9 @@ class EmailObfuscatorMiddleware implements HttpKernelInterface {
           $response->setContent($obfuscateEmails);
         }
       }
-    } catch (\Exception $e) {
+    }
+    catch (ResourceNotFoundException | MethodNotAllowedException) {}
+    catch (\Exception $e) {
       \Drupal::logger('email_obfuscator')->error($e->getMessage());
     }
 
