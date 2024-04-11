@@ -10,9 +10,11 @@ emails with regexes. The emails are obfuscated depending on where the text is fo
 Example: `<a href="mailto:test@email.com">`
 
 - The email string excluding `mailto:` is reversed
-- An onclick is added that re-reverses the email after the `mailto:`
+- An onfocus and an onmousedown are added which re-reverse the email after the `mailto:`. These two events cover the
+  following cases: right-click, left-click and focus with tab. (onfocus would do it for most browsers, but Safari needs
+  onmousedown.)
 
-_The onclick-re-reverse is only done once in order to avoid reversing back to the reversed email_
+_The re-reverse is only done once in order to avoid reversing back to the reversed email_
 
 ### All other Emails
 
