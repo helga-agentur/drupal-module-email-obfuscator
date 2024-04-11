@@ -47,9 +47,13 @@ class EmailObfuscatorService {
         }
 
         // the dataset.obfuscated is used to check if the link has already been reverted
+        $jsString = "!this.dataset.obfuscated && (this.dataset.obfuscated = true) && this.setAttribute('href', 'mailto:' + this.getAttribute('href').substring(7).split('').reverse().join(''))";
+
+        // Use onmousedown and on focus to cover all cases: right-click, left-click and select with tab.
+        // (onfocus would do it for most browsers, but Safari needs onmousedown.)
         return $matches[1] . "\"mailto:" . strrev(
-            $matches[2]
-          ) . "\" onclick=\"!this.dataset.obfuscated && (this.dataset.obfuscated = true) && this.setAttribute('href', 'mailto:' + this.getAttribute('href').substring(7).split('').reverse().join(''))\"";
+          $matches[2]
+        ) . "\" onfocus=\"" . $jsString . "\" onmousedown=\"" . $jsString . "\"";
       },
       $content
     ) ?? throw new \Exception(
