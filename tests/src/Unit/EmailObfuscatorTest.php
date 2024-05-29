@@ -66,6 +66,14 @@ class EmailObfuscatorTest extends UnitTestCase {
     $this->assertEquals($content, $this->emailObfuscatorService->obfuscateEmails($content));
   }
 
+  public function testPlaintextEmailInInput() {
+    $content = '<input>test@email.com</input>';
+    $this->assertEquals($content, $this->emailObfuscatorService->obfuscateEmails($content));
+
+    $content2 = '<input value="test@email">test@email.com</input>';
+    $this->assertEquals($content2, $this->emailObfuscatorService->obfuscateEmails($content2));
+  }
+
   public function testEmailsWildlyInsideHtmlElements() {
     $content = "<div test@email.com>test@email.com</div>";
     $this->assertEquals("<div test@email.com>test@<span style='display:none'>!zilch!</span>email.com</div>", $this->emailObfuscatorService->obfuscateEmails($content));
