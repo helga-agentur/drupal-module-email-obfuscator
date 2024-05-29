@@ -73,22 +73,26 @@ class EmailObfuscatorService {
    * @throws \Exception
    */
   private function obfuscateEmailStrings(string $content, string $displayNoneText): string {
+    $htmlInput = '<input[^>]*>.+?<\/input>';
+    $emailsNotInHTMLElement = '(<[^>]+)|(([\w\-\.]+@)([\w\-\.]+\.[a-zA-Z]{2,}))';
+
     // get all email strings that are not in an html element
-    $emailRegex = '/(<[^>]+)|(([\w\-\.]+@)([\w\-\.]+\.[a-zA-Z]{2,}))/';
+    // and exclude emails that are in an input (shadow content)
+    $regex = '/^(' . $htmlInput . ')|(' . $emailsNotInHTMLElement . ')/';
 
     // exclamation marks are invalid in emails. we use them as delimiters, so we don't replace unwanted parts of the email
     $stringToReplace = "!" . $displayNoneText . "!";
 
     return preg_replace_callback(
-      $emailRegex,
-      function ($matches) use ($stringToReplace) {
-        // if the email is in an HTML element or if the email is invalid, don't do anything
-        if (!empty($matches[1]) || !filter_var($matches[2], FILTER_VALIDATE_EMAIL)) {
+      $regex,
+      function ($matches) use ($stringToReplace, $htmlInput) {
+        // have to check if matches inside input because there won't be any more than 2 match groups which would cause an error (e.g. $matches[4])
+        if (preg_match('/' . $htmlInput . '/', $matches[0]) || (!empty($matches[3]) || !filter_var($matches[4], FILTER_VALIDATE_EMAIL))) {
           return $matches[0];
         }
 
         // otherwise add the display-none-span
-        return $matches[3] . "<span style='display:none'>" . $stringToReplace . "</span>" . $matches[4];
+        return $matches[5] . "<span style='display:none'>" . $stringToReplace . "</span>" . $matches[6];
       },
       $content
     ) ?? throw new \Exception('Adding display-none-span failed.');
