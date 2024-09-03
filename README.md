@@ -28,6 +28,9 @@ Example: `<a>test@email.com</a>`
 - Any email that is invalid (according to PHP's `filter_var` function)
 - Everything in the backoffice (admin pages)
 - Emails inside HTML-attributes (placeholder for input fields)
+- Exclude Ajax webform request:
+    - Because Ajax is usually used when sending a web form. This means that the request contains a JSON object rather  
+      than HTML. The regex does not apply here and it is not necessary to obfuscate this e-mail address. 
 - Content in routes that are whitelisted (see below)
 
 ### Whitelisting Routes

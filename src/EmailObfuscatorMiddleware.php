@@ -44,9 +44,15 @@ class EmailObfuscatorMiddleware implements HttpKernelInterface {
         $isAdminPath = \Drupal::service('router.admin_context')->isAdminRoute($routes['_route_object']);
         $whitelist = Settings::get('email_obfuscator')['route_whitelist'] ?? [];
         $isWhitelisted = in_array($routes['_route'], $whitelist);
+        /**
+        * Check whether an Ajax route with Webform content has been sent;
+        * this content should not be obfuscated.
+        */
+        $isAjaxRequest = $request->isXmlHttpRequest();
+        $isWebForm = $request->request->has('form_id') && str_starts_with($request->request->get('form_id'), 'webform');
 
-        // don't obfuscate emails in backoffice or on whitelisted routes
-        if (!$isAdminPath && !$isWhitelisted && $obfuscateEmails = $this->emailObfuscatorService->obfuscateEmails(
+        // don't obfuscate emails in backoffice or on whitelisted routes or from webforms
+        if (!$isAdminPath && !$isWhitelisted && (!$isAjaxRequest && !$isWebForm) && $obfuscateEmails = $this->emailObfuscatorService->obfuscateEmails(
             $content
           )) {
           $response->setContent($obfuscateEmails);
