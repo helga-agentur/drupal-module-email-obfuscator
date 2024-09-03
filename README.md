@@ -29,8 +29,10 @@ Example: `<a>test@email.com</a>`
 - Everything in the backoffice (admin pages)
 - Emails inside HTML-attributes (placeholder for input fields)
 - Exclude Ajax webform request:
-    - Because Ajax is usually used when sending a web form. This means that the request contains a JSON object rather  
-      than HTML. The regex does not apply here and it is not necessary to obfuscate this e-mail address. 
+    - Because Ajax is usually used when sending a web form.   
+      This means that the request does not contain HTML, but a JSON object in which HTML is encoded with Unicode.   
+      The regex does not apply here and it is not necessary to obfuscate this email address as it is added by the
+      sender.
 - Content in routes that are whitelisted (see below)
 
 ### Whitelisting Routes
