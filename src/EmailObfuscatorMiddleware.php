@@ -56,6 +56,7 @@ class EmailObfuscatorMiddleware implements HttpKernelInterface {
             && (!$isAjaxRequest && !$isWebForm)
             && $obfuscateEmails = $this->emailObfuscatorService->obfuscateEmails($content)) {
           $response->setContent($obfuscateEmails);
+          $response->headers->set('Content-Length', strlen($obfuscateEmails), TRUE);
         }
       }
     }
