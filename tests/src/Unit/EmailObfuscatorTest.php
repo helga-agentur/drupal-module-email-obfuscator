@@ -12,7 +12,12 @@ use Drupal\Tests\UnitTestCase;
  */
 class EmailObfuscatorTest extends UnitTestCase {
 
-  protected EmailObfuscatorService $emailObfuscatorService;
+  /**
+   * The email obfuscator service.
+   *
+   * @var \Drupal\email_obfuscator\EmailObfuscatorService
+   */
+  protected EmailObfuscatorService $emailObfuscator;
 
   /**
    * {@inheritdoc}
@@ -20,64 +25,71 @@ class EmailObfuscatorTest extends UnitTestCase {
   protected function setUp(): void {
     parent::setUp();
 
-    $this->emailObfuscatorService = new EmailObfuscatorService();
+    $this->emailObfuscator = new EmailObfuscatorService();
   }
 
-  protected function tearDown(): void {
-    unset($this->emailObfuscatorService);
-
-    parent::tearDown();
+  /**
+   * Tests the email obfuscation functionality.
+   *
+   * @dataProvider dataProviderForTestEmailObfuscation
+   */
+  public function testEmailInText(string $content, string $expected): void {
+    $this->assertSame(
+      $expected,
+      $this->emailObfuscator->obfuscateEmails($content),
+      "The email obfuscation did not match the expected output for case: $content"
+    );
   }
 
-  public function testPlainTextEmail(): void {
-    $content = 'test@email.com';
-    $this->assertEquals(
+  /**
+   * Data provider for testEmailInText
+   * 
+   * This provides various test cases for email obfuscation.
+   * 
+   * @return \Generator
+   *   A generator yielding arrays with content and expected output.
+   */
+  public static function dataProviderForTestEmailObfuscation(): \Generator {
+    yield 'testPlainTextEmail' => [
+      'test@email.com',
       'test@<span style=\'display:none\'>!zilch!</span>email.com',
-      $this->emailObfuscatorService->obfuscateEmails($content)
-    );
-  }
-
-  public function testEmailInMailtoHref(): void {
-    $content = '<a href="mailto:test@email.com">';
-
-    $this->assertEquals(
+    ];
+    yield 'testEmailInMailtoHref' => [
+      '<a href="mailto:test@email.com">',
       '<a href="mailto:moc.liame@tset" onfocus="!this.dataset.obfuscated && (this.dataset.obfuscated = true) && this.setAttribute(\'href\', \'mailto:\' + this.getAttribute(\'href\').substring(7).split(\'\').reverse().join(\'\'))" onmousedown="!this.dataset.obfuscated && (this.dataset.obfuscated = true) && this.setAttribute(\'href\', \'mailto:\' + this.getAttribute(\'href\').substring(7).split(\'\').reverse().join(\'\'))">',
-      $this->emailObfuscatorService->obfuscateEmails($content)
-    );
-  }
-
-  public function testInvalidEmailInMailtoHref(): void {
-    $content = '<a href="test@email.com">';
-    $this->assertEquals($content, $this->emailObfuscatorService->obfuscateEmails($content));
-  }
-
-  public function testEmailInHtmlAttribute(): void {
-    $content = '<input placeholder="test@email.com">';
-    $this->assertEquals($content, $this->emailObfuscatorService->obfuscateEmails($content));
-  }
-
-  public function testEmailInHtmlAttributeWithMailto(): void {
-    $content = '<input placeholder="mailto:test@email.com">';
-    $this->assertEquals($content, $this->emailObfuscatorService->obfuscateEmails($content));
-  }
-
-  public function testEmailInMailtoHrefWithSpace() {
-    $content = '<a href="mailto: test@ email.com ">';
-    $this->assertEquals($content, $this->emailObfuscatorService->obfuscateEmails($content));
-  }
-
-  public function testEmailsWildlyInsideHtmlElements() {
-    $content = "<div test@email.com>test@email.com</div>";
-    $this->assertEquals("<div test@email.com>test@<span style='display:none'>!zilch!</span>email.com</div>", $this->emailObfuscatorService->obfuscateEmails($content));
-
-    $content = "<div test@email.com>asdf test@email.com</div>";
-    $this->assertEquals("<div test@email.com>asdf test@<span style='display:none'>!zilch!</span>email.com</div>", $this->emailObfuscatorService->obfuscateEmails($content));
-
-    $content = "<div test@email.com test@email.com>asdf test@email.com</div test@email.com>";
-    $this->assertEquals("<div test@email.com test@email.com>asdf test@<span style='display:none'>!zilch!</span>email.com</div test@email.com>", $this->emailObfuscatorService->obfuscateEmails($content));
-
-    $content = "<div test@email.com><br/>asdf test@email.com</div test@email.com>";
-    $this->assertEquals("<div test@email.com><br/>asdf test@<span style='display:none'>!zilch!</span>email.com</div test@email.com>", $this->emailObfuscatorService->obfuscateEmails($content));
+    ];
+    yield 'testInvalidEmailInMailtoHref' => [
+      '<a href="test@email.com">',
+      '<a href="test@email.com">',
+    ];
+    yield 'testEmailInHtmlAttribute' => [
+      '<input placeholder="test@email.com">',
+      '<input placeholder="test@email.com">',
+    ];
+    yield 'testEmailInHtmlAttributeWithMailto' => [
+      '<input placeholder="mailto:test@email.com">',
+      '<input placeholder="mailto:test@email.com">',
+    ];
+    yield 'testEmailInMailtoHrefWithSpace' => [
+      '<a href="mailto: test@ email.com ">',
+      '<a href="mailto: test@ email.com ">',
+    ];
+    yield 'testEmailsWildlyInsideHtmlElementsNormal' => [
+      "<div test@email.com>test@email.com</div>",
+      "<div test@email.com>test@<span style='display:none'>!zilch!</span>email.com</div>",
+    ];
+    yield 'testEmailsWildlyInsideHtmlElementsWithSpace' => [
+      "<div test@email.com>asdf test@email.com</div>",
+      "<div test@email.com>asdf test@<span style='display:none'>!zilch!</span>email.com</div>",
+    ];
+    yield 'testEmailsWildlyInsideHtmlElementsWithMultipleEmails' => [
+      "<div test@email.com test@email.com>asdf test@email.com</div test@email.com>",
+      "<div test@email.com test@email.com>asdf test@<span style='display:none'>!zilch!</span>email.com</div test@email.com>",
+    ];
+    yield 'testEmailsWildlyInsideHtmlElementsWithBr' => [
+      "<div test@email.com><br/>asdf test@email.com</div test@email.com>",
+      "<div test@email.com><br/>asdf test@<span style='display:none'>!zilch!</span>email.com</div test@email.com>",
+    ];
   }
 
 }
