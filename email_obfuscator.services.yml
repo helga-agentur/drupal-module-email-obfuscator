@@ -7,3 +7,9 @@ services:
 
   email_obfuscator.service:
     class: Drupal\email_obfuscator\EmailObfuscatorService
+
+  email_obfuscator.response_filter:
+    class: Drupal\email_obfuscator\EventSubscriber\EmailObfuscatorResponseFilter
+    arguments: ['@email_obfuscator.service']
+    tags:
+      - { name: event_subscriber }
