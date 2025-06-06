@@ -6,7 +6,11 @@
     "authors": [
         {
             "name": "Hudson Muff",
-            "email": "hudson@joinbox.com"
+            "email": "hudson@helga.com"
+        },
+        {
+            "name": "Stefanos Petrakis",
+            "email": "stefanos@helga.com"
         }
     ],
     "minimum-stability": "stable",
