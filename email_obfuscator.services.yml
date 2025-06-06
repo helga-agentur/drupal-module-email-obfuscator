@@ -4,6 +4,6 @@ services:
 
   email_obfuscator.response_filter:
     class: Drupal\email_obfuscator\EventSubscriber\EmailObfuscatorResponseFilter
-    arguments: ['@email_obfuscator.service']
+    arguments: ['@email_obfuscator.service', '@router.no_access_checks', '@router.admin_context']
     tags:
       - { name: event_subscriber }

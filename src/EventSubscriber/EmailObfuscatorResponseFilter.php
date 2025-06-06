@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\email_obfuscator\EventSubscriber;
 
+use Drupal\Core\Routing\AdminContext;
 use Drupal\Core\Site\Settings;
 use Drupal\email_obfuscator\EmailObfuscatorService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -11,6 +12,7 @@ use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Routing\Exception\MethodNotAllowedException;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
+use Symfony\Component\Routing\Matcher\RequestMatcherInterface;
 
 /**
  * Event subscriber to obfuscate email addresses in responses.
@@ -25,7 +27,9 @@ final class EmailObfuscatorResponseFilter implements EventSubscriberInterface {
    * Constructs an EmailObfuscatorSubscriber object.
    */
   public function __construct(
-    private readonly EmailObfuscatorService $emailObfuscatorService,
+    private readonly EmailObfuscatorService $emailObfuscator,
+    private readonly RequestMatcherInterface $requestMatcher,
+    private readonly AdminContext $adminContext,
   ) {}
 
   /**
@@ -37,8 +41,8 @@ final class EmailObfuscatorResponseFilter implements EventSubscriberInterface {
 
     try {
       if ($content = $response->getContent()) {
-        $routes = \Drupal::service('router.no_access_checks')->matchRequest($request);
-        $isAdminPath = \Drupal::service('router.admin_context')->isAdminRoute($routes['_route_object']);
+        $routes = $this->requestMatcher->matchRequest($request);
+        $isAdminPath = $this->adminContext->isAdminRoute($routes['_route_object']);
         $whitelist = Settings::get('email_obfuscator')['route_whitelist'] ?? [];
         $isWhitelisted = in_array($routes['_route'], $whitelist);
 
@@ -51,7 +55,7 @@ final class EmailObfuscatorResponseFilter implements EventSubscriberInterface {
         if (!$isAdminPath
             && !$isWhitelisted
             && (!$isAjaxRequest && !$isWebForm)
-            && $obfuscateEmails = $this->emailObfuscatorService->obfuscateEmails($content)) {
+            && $obfuscateEmails = $this->emailObfuscator->obfuscateEmails($content)) {
           $response->setContent($obfuscateEmails);
         }
       }
