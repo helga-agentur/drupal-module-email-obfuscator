@@ -1,0 +1,7 @@
+email_obfuscator_test.verbatim_respond:
+  path: '/email-obfuscator-test/verbatim-respond'
+  defaults:
+    _title: 'Email Obfuscator Test'
+    _controller: '\Drupal\email_obfuscator_test_controller\Controller\EmailObfuscatorTestVerbatimController::respond'
+  requirements:
+    _role: 'anonymous'

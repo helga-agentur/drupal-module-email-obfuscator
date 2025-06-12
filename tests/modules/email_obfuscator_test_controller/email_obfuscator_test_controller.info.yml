@@ -1,0 +1,7 @@
+name: 'Email Obfuscator Test Verbatim Controller'
+type: module
+description: 'A verbatim controller that allows checking the HTTP request-response roundtrip works as expected'
+package: Custom
+core_version_requirement: ^10 || ^11
+dependencies:
+  - drupal:email_obfuscator
