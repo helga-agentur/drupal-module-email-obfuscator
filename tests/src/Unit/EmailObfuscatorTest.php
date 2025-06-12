@@ -31,7 +31,7 @@ class EmailObfuscatorTest extends UnitTestCase {
   /**
    * Tests the email obfuscation functionality.
    * 
-   * N.B.: This test suite is running via the Brower too, in order to
+   * N.B.: This test suite is running via the Browser too, in order to
    * ensure that the email obfuscation works in a real Drupal context.
    * It is kept here to provide a fast way to manage the test cases,
    * i.e. extend and debug via Unit tests, and then run the same
