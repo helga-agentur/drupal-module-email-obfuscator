@@ -50,7 +50,7 @@ final class EmailObfuscatorBrowserTest extends BrowserTestBase {
     // then test for email obfuscation.
     // This allows testing the email obfuscation functionality
     // in a browser context, simulating how it would be rendered
-    // in a real Drupal page. 
+    // in a real Drupal page.
     $response_content = $this->drupalGet(self::$verbatimControllerUrl,
       ['query' => ['content' => $content]]);
     $this->assertSame($expected, $response_content,
