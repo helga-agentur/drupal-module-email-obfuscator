@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\email_obfuscator\Unit;
 
+use Drupal\Core\Site\Settings;
 use Drupal\email_obfuscator\EmailObfuscatorService;
 use Drupal\Tests\UnitTestCase;
 
@@ -58,43 +59,53 @@ class EmailObfuscatorTest extends UnitTestCase {
   public static function dataProviderForTestEmailObfuscation(): \Generator {
     yield 'testPlainTextEmail' => [
       'test@email.com',
-      'test@<span style=\'display:none\'>!zilch!</span>email.com',
+      'test@<span style=\'display:none\' data-nosnippet>!zilch!</span>email.com',
+      'test@<span style=\'display:none\' >!zilch!</span>email.com',
     ];
     yield 'testEmailInMailtoHref' => [
       '<a href="mailto:test@email.com">',
       '<a href="mailto:moc.liame@tset" onfocus="!this.dataset.obfuscated && (this.dataset.obfuscated = true) && this.setAttribute(\'href\', \'mailto:\' + this.getAttribute(\'href\').substring(7).split(\'\').reverse().join(\'\'))" onmousedown="!this.dataset.obfuscated && (this.dataset.obfuscated = true) && this.setAttribute(\'href\', \'mailto:\' + this.getAttribute(\'href\').substring(7).split(\'\').reverse().join(\'\'))">',
+      '<a href="mailto:moc.liame@tset" onfocus="!this.dataset.obfuscated && (this.dataset.obfuscated = true) && this.setAttribute(\'href\', \'mailto:\' + this.getAttribute(\'href\').substring(7).split(\'\').reverse().join(\'\'))" onmousedown="!this.dataset.obfuscated && (this.dataset.obfuscated = true) && this.setAttribute(\'href\', \'mailto:\' + this.getAttribute(\'href\').substring(7).split(\'\').reverse().join(\'\'))">',
     ];
     yield 'testInvalidEmailInMailtoHref' => [
+      '<a href="test@email.com">',
       '<a href="test@email.com">',
       '<a href="test@email.com">',
     ];
     yield 'testEmailInHtmlAttribute' => [
       '<input placeholder="test@email.com">',
       '<input placeholder="test@email.com">',
+      '<input placeholder="test@email.com">',
     ];
     yield 'testEmailInHtmlAttributeWithMailto' => [
+      '<input placeholder="mailto:test@email.com">',
       '<input placeholder="mailto:test@email.com">',
       '<input placeholder="mailto:test@email.com">',
     ];
     yield 'testEmailInMailtoHrefWithSpace' => [
       '<a href="mailto: test@ email.com ">',
       '<a href="mailto: test@ email.com ">',
+      '<a href="mailto: test@ email.com ">',
     ];
     yield 'testEmailsWildlyInsideHtmlElementsNormal' => [
       "<div test@email.com>test@email.com</div>",
-      "<div test@email.com>test@<span style='display:none'>!zilch!</span>email.com</div>",
+      "<div test@email.com>test@<span style='display:none' data-nosnippet>!zilch!</span>email.com</div>",
+      "<div test@email.com>test@<span style='display:none' >!zilch!</span>email.com</div>",
     ];
     yield 'testEmailsWildlyInsideHtmlElementsWithSpace' => [
       "<div test@email.com>asdf test@email.com</div>",
-      "<div test@email.com>asdf test@<span style='display:none'>!zilch!</span>email.com</div>",
+      "<div test@email.com>asdf test@<span style='display:none' data-nosnippet>!zilch!</span>email.com</div>",
+      "<div test@email.com>asdf test@<span style='display:none' >!zilch!</span>email.com</div>",
     ];
     yield 'testEmailsWildlyInsideHtmlElementsWithMultipleEmails' => [
       "<div test@email.com test@email.com>asdf test@email.com</div test@email.com>",
-      "<div test@email.com test@email.com>asdf test@<span style='display:none'>!zilch!</span>email.com</div test@email.com>",
+      "<div test@email.com test@email.com>asdf test@<span style='display:none' data-nosnippet>!zilch!</span>email.com</div test@email.com>",
+      "<div test@email.com test@email.com>asdf test@<span style='display:none' >!zilch!</span>email.com</div test@email.com>",
     ];
     yield 'testEmailsWildlyInsideHtmlElementsWithBr' => [
       "<div test@email.com><br/>asdf test@email.com</div test@email.com>",
-      "<div test@email.com><br/>asdf test@<span style='display:none'>!zilch!</span>email.com</div test@email.com>",
+      "<div test@email.com><br/>asdf test@<span style='display:none' data-nosnippet>!zilch!</span>email.com</div test@email.com>",
+      "<div test@email.com><br/>asdf test@<span style='display:none' >!zilch!</span>email.com</div test@email.com>",
     ];
   }
 
