@@ -37,7 +37,7 @@ class EmailObfuscatorTest extends UnitTestCase {
       $this->emailObfuscatorService->obfuscateEmails($content)
     );
     $this->assertEquals(
-      'test@<span style=\'display:none\'>!zilch!</span>email.com',
+      'test@<span style=\'display:none\' >!zilch!</span>email.com',
       $this->emailObfuscatorService->obfuscateEmails($content, FALSE)
     );
   }
@@ -74,19 +74,19 @@ class EmailObfuscatorTest extends UnitTestCase {
   public function testEmailsWildlyInsideHtmlElements() {
     $content = "<div test@email.com>test@email.com</div>";
     $this->assertEquals("<div test@email.com>test@<span style='display:none' data-nosnippet>!zilch!</span>email.com</div>", $this->emailObfuscatorService->obfuscateEmails($content));
-    $this->assertEquals("<div test@email.com>test@<span style='display:none'>!zilch!</span>email.com</div>", $this->emailObfuscatorService->obfuscateEmails($content, FALSE));
+    $this->assertEquals("<div test@email.com>test@<span style='display:none' >!zilch!</span>email.com</div>", $this->emailObfuscatorService->obfuscateEmails($content, FALSE));
 
     $content = "<div test@email.com>asdf test@email.com</div>";
     $this->assertEquals("<div test@email.com>asdf test@<span style='display:none' data-nosnippet>!zilch!</span>email.com</div>", $this->emailObfuscatorService->obfuscateEmails($content));
-    $this->assertEquals("<div test@email.com>asdf test@<span style='display:none'>!zilch!</span>email.com</div>", $this->emailObfuscatorService->obfuscateEmails($content, FALSE));
+    $this->assertEquals("<div test@email.com>asdf test@<span style='display:none' >!zilch!</span>email.com</div>", $this->emailObfuscatorService->obfuscateEmails($content, FALSE));
 
     $content = "<div test@email.com test@email.com>asdf test@email.com</div test@email.com>";
     $this->assertEquals("<div test@email.com test@email.com>asdf test@<span style='display:none' data-nosnippet>!zilch!</span>email.com</div test@email.com>", $this->emailObfuscatorService->obfuscateEmails($content));
-    $this->assertEquals("<div test@email.com test@email.com>asdf test@<span style='display:none'>!zilch!</span>email.com</div test@email.com>", $this->emailObfuscatorService->obfuscateEmails($content, FALSE));
+    $this->assertEquals("<div test@email.com test@email.com>asdf test@<span style='display:none' >!zilch!</span>email.com</div test@email.com>", $this->emailObfuscatorService->obfuscateEmails($content, FALSE));
 
     $content = "<div test@email.com><br/>asdf test@email.com</div test@email.com>";
     $this->assertEquals("<div test@email.com><br/>asdf test@<span style='display:none' data-nosnippet>!zilch!</span>email.com</div test@email.com>", $this->emailObfuscatorService->obfuscateEmails($content));
-    $this->assertEquals("<div test@email.com><br/>asdf test@<span style='display:none'>!zilch!</span>email.com</div test@email.com>", $this->emailObfuscatorService->obfuscateEmails($content, FALSE));
+    $this->assertEquals("<div test@email.com><br/>asdf test@<span style='display:none' >!zilch!</span>email.com</div test@email.com>", $this->emailObfuscatorService->obfuscateEmails($content, FALSE));
   }
 
 }
