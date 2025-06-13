@@ -45,6 +45,9 @@ final class EmailObfuscatorResponseFilter implements EventSubscriberInterface {
         $isAdminPath = $this->adminContext->isAdminRoute($routes['_route_object']);
         $whitelist = Settings::get('email_obfuscator')['route_whitelist'] ?? [];
         $isWhitelisted = in_array($routes['_route'], $whitelist);
+        // Check whether the data-nosnippet attribute should be used, default
+        // is TRUE.
+        $useDataNoSnippet = Settings::get('email_obfuscator')['use_datanosnippet'] ?? TRUE;
 
         // Check whether an Ajax route with Webform content has been sent;
         // this content should not be obfuscated.
@@ -55,7 +58,7 @@ final class EmailObfuscatorResponseFilter implements EventSubscriberInterface {
         if (!$isAdminPath
             && !$isWhitelisted
             && (!$isAjaxRequest && !$isWebForm)
-            && $obfuscateEmails = $this->emailObfuscator->obfuscateEmails($content)) {
+            && $obfuscateEmails = $this->emailObfuscator->obfuscateEmails($content, $useDataNoSnippet)) {
           $response->setContent($obfuscateEmails);
         }
       }
