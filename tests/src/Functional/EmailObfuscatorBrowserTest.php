@@ -75,7 +75,7 @@ final class EmailObfuscatorBrowserTest extends BrowserTestBase {
     $response_content = $this->drupalGet(self::$verbatimControllerUrl,
       ['query' => ['content' => $content]]);
     $this->assertSame($expected, $response_content,
-      "The email obfuscation did not match the expected output for authenticaed users, case: $content");
+      "The email obfuscation did not match the expected output for authenticated users, case: $content");
   }
 
   /**
