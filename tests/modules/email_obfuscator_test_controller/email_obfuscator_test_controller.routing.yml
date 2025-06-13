@@ -5,3 +5,13 @@ email_obfuscator_test.verbatim_respond:
     _controller: '\Drupal\email_obfuscator_test_controller\Controller\EmailObfuscatorTestVerbatimController::respond'
   requirements:
     _role: 'anonymous'
+
+email_obfuscator_test.verbatim_respond_admin:
+  path: '/email-obfuscator-test/verbatim-respond-admin'
+  defaults:
+    _title: 'Email Obfuscator Test - Admin route'
+    _controller: '\Drupal\email_obfuscator_test_controller\Controller\EmailObfuscatorTestVerbatimController::respond'
+  requirements:
+    _user_is_logged_in: TRUE
+  options:
+    _admin_route: TRUE
