@@ -13,15 +13,17 @@ class EmailObfuscatorService {
    * http://jasonpriem.com/obfuscation-decoder/
    *
    * @param string $content
+   * @param bool $useDataNoSnippet
+   *  Whether to use the data-nosnippet attribute to prevent the email from
    *
    * @return string The processed string
    * @throws \Exception
    */
-  public function obfuscateEmails(string $content): string {
+  public function obfuscateEmails(string $content, bool $useDataNoSnippet = TRUE): string {
     $obfuscateMailtoLinks = $this->obfuscateMailtoLinks($content);
 
     // TODO: maybe use random string for displayNoneText
-    return $this->obfuscateEmailStrings($obfuscateMailtoLinks, "zilch");
+    return $this->obfuscateEmailStrings($obfuscateMailtoLinks, "zilch", $useDataNoSnippet);
   }
 
   /**
@@ -68,27 +70,33 @@ class EmailObfuscatorService {
    *
    * @param string $content
    * @param string $displayNoneText
+   * @param bool $useDataNoSnippet
+   *  Whether to use the data-nosnippet attribute to prevent the email from
+   *  being indexed by search engines. Defaults to TRUE.
    *
    * @return string
    * @throws \Exception
    */
-  private function obfuscateEmailStrings(string $content, string $displayNoneText): string {
+  private function obfuscateEmailStrings(string $content, string $displayNoneText, bool $useDataNoSnippet = TRUE): string {
     // get all email strings that are not in an html element
     $emailRegex = '/(<[^>]+)|(([\w\-\.]+@)([\w\-\.]+\.[a-zA-Z]{2,}))/';
 
     // exclamation marks are invalid in emails. we use them as delimiters, so we don't replace unwanted parts of the email
     $stringToReplace = "!" . $displayNoneText . "!";
 
+    // if the data-nosnippet attribute should be used, add it to the span
+    $dataNoSnippetString = $useDataNoSnippet ? "data-nosnippet" : "";
+
     return preg_replace_callback(
       $emailRegex,
-      function ($matches) use ($stringToReplace) {
+      function ($matches) use ($stringToReplace, $dataNoSnippetString) {
         // if the email is in an HTML element or if the email is invalid, don't do anything
         if (!empty($matches[1]) || !filter_var($matches[2], FILTER_VALIDATE_EMAIL)) {
           return $matches[0];
         }
 
         // otherwise add the display-none-span
-        return $matches[3] . "<span style='display:none'>" . $stringToReplace . "</span>" . $matches[4];
+        return $matches[3] . "<span style='display:none' $dataNoSnippetString>" . $stringToReplace . "</span>" . $matches[4];
       },
       $content
     ) ?? throw new \Exception('Adding display-none-span failed.');
