@@ -48,3 +48,14 @@ Example: `<a>test@email.com</a>`
    ```
 - **IMPORTANT:** If you are using CKEditor 4 you should whitelist the route `editor.link_dialog` to avoid
   obfuscating the email in the CKEditor link dialog.
+
+### Disabling use of data-nosnippet
+
+- The attribute data-nosnippet is used by default, to disable displaying the $displayNoneText.
+  It is possible to disable it in settings.php
+   ```php
+   $settings['email_obfuscator'] = [
+     'use_datanosnippet' => FALSE,
+   ];
+   ```
+- **IMPORTANT:** The data-nosnippet attribute is officially supported ONLY by the Googlebot. Support from other bots is not guaranteed.
