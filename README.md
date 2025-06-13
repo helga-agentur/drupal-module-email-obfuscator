@@ -51,7 +51,7 @@ Example: `<a>test@email.com</a>`
 
 ### Disabling use of data-nosnippet
 
-- The attribute data-nosnippet is used by default, to disable displaying the $displayNoneText.
+- The attribute data-nosnippet is used by default, to disable displaying the $displayNoneText in search results.
   It is possible to disable it in settings.php
    ```php
    $settings['email_obfuscator'] = [
