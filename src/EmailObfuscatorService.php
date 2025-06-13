@@ -85,7 +85,7 @@ class EmailObfuscatorService {
     $stringToReplace = "!" . $displayNoneText . "!";
 
     // if the data-nosnippet attribute should be used, add it to the span
-    $dataNoSnippetString = $useDataNoSnippet ? " data-nosnippet" : "";
+    $dataNoSnippetString = $useDataNoSnippet ? "data-nosnippet" : "";
 
     return preg_replace_callback(
       $emailRegex,
@@ -96,7 +96,7 @@ class EmailObfuscatorService {
         }
 
         // otherwise add the display-none-span
-        return $matches[3] . "<span style='display:none'$dataNoSnippetString>" . $stringToReplace . "</span>" . $matches[4];
+        return $matches[3] . "<span style='display:none' $dataNoSnippetString>" . $stringToReplace . "</span>" . $matches[4];
       },
       $content
     ) ?? throw new \Exception('Adding display-none-span failed.');
