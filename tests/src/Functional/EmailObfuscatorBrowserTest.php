@@ -43,14 +43,14 @@ final class EmailObfuscatorBrowserTest extends BrowserTestBase {
   }
 
   /**
-   * Tests the email obfuscation functionality in a browser context.
+   * Tests the email obfuscation functionality with an anonymous user.
    * 
    * @param string $content
    * @param string $expected
    * 
    * @dataProvider dataProviderForTestEmailObfuscationProxy
    */
-  public function testVerbatimSymfonyResponse(string $content, string $expected): void {
+  public function testVerbatimSymfonyResponseAnon(string $content, string $expected): void {
     // This controller will return the content as is, which we will
     // then test for email obfuscation.
     // This allows testing the email obfuscation functionality
@@ -59,7 +59,23 @@ final class EmailObfuscatorBrowserTest extends BrowserTestBase {
     $response_content = $this->drupalGet(self::$verbatimControllerUrl,
       ['query' => ['content' => $content]]);
     $this->assertSame($expected, $response_content,
-      "The email obfuscation did not match the expected output for case: $content");
+      "The email obfuscation did not match the expected output for anonymous users, case: $content");
+  }
+
+  /**
+   * Tests the email obfuscation functionality with an authenticated user.
+   * 
+   * @param string $content
+   * @param string $expected
+   * 
+   * @dataProvider dataProviderForTestEmailObfuscationProxy
+   */
+  public function testVerbatimSymfonyResponseAuth(string $content, string $expected): void {
+    $this->drupalLogin($this->drupalCreateUser());
+    $response_content = $this->drupalGet(self::$verbatimControllerUrl,
+      ['query' => ['content' => $content]]);
+    $this->assertSame($expected, $response_content,
+      "The email obfuscation did not match the expected output for authenticaed users, case: $content");
   }
 
   /**
