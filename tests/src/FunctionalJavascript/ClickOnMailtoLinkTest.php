@@ -44,31 +44,34 @@ final class ClickOnMailtoLinkTest extends WebDriverTestBase {
     $this->drupalGet($this->getUrlForRoute(self::$verbatimControllerRoute), [
       'query' => ['content' => '<a class="mailto-link" href="mailto:test@email.com">Click here to email</a>']]);
 
-    $page_html = $this->getSession()->getPage()->getHtml();
-    $this->assertStringContainsString(
-      'href="mailto:moc.liame@tset"',
-      $page_html,
-      'The mailto link should be obfuscated in the page HTML before clicking.'
+    $mailto_link = $this->getSession()->getPage()->find('css', 'a.mailto-link');
+    $this->assertNotNull($mailto_link, 'The mailto link should exist on the page.');
+    $this->assertEquals(
+      'mailto:moc.liame@tset',
+      $mailto_link->getAttribute('href'),
+      'The mailto link should be obfuscated before clicking.'
     );
 
     // Click on the mailto link.
     $this->getSession()->getPage()->find('css', 'a.mailto-link')->click();
 
-    $page_html = $this->getSession()->getPage()->getHtml();
-    $this->assertStringContainsString(
-      'href="mailto:test@email.com"',
-      $page_html,
-      'The mailto link should be un-obfuscated in the page HTML after clicking.'
+    $mailto_link = $this->getSession()->getPage()->find('css', 'a.mailto-link');
+    $this->assertNotNull($mailto_link, 'The mailto link should exist on the page.');
+    $this->assertEquals(
+      'mailto:test@email.com',
+      $mailto_link->getAttribute('href'),
+      'The mailto link should be un-obfuscated after clicking.'
     );
 
     // Click again on the mailto link.
     $this->getSession()->getPage()->find('css', 'a.mailto-link')->click();
 
-    $page_html = $this->getSession()->getPage()->getHtml();
-    $this->assertStringContainsString(
-      'href="mailto:test@email.com"',
-      $page_html,
-      'The mailto link should be still un-obfuscated in the page HTML after clicking a second time.'
+    $mailto_link = $this->getSession()->getPage()->find('css', 'a.mailto-link');
+    $this->assertNotNull($mailto_link, 'The mailto link should exist on the page.');
+    $this->assertEquals(
+      'mailto:test@email.com',
+      $mailto_link->getAttribute('href'),
+      'The mailto link should still be un-obfuscated after clicking a second time.'
     );
 
   }
