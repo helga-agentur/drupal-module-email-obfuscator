@@ -82,11 +82,10 @@ final class EmailObfuscatorBrowserTest extends BrowserTestBase {
    * This scenario requires an authenticated user.
    * 
    * @param string $content
-   * @param string $expected
    * 
    * @dataProvider dataProviderForTestEmailObfuscationProxy
    */
-  public function testVerbatimSymfonyResponseAdmin(string $content, string $expected): void {
+  public function testVerbatimSymfonyResponseAdmin(string $content): void {
     $this->drupalLogin($this->drupalCreateUser());
     $response_content = $this->drupalGet($this->getUrlForRoute(self::$verbatimControllerAdminRoute),
       ['query' => ['content' => $content]]);
