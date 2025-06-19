@@ -55,6 +55,8 @@ final class ClickOnMailtoLinkTest extends WebDriverTestBase {
     // Click on the mailto link.
     $this->getSession()->getPage()->find('css', 'a.mailto-link')->click();
 
+    // Wait for the mailto link's href attribute to update to the un-obfuscated value.
+    $this->assertSession()->elementAttributeContains('css', 'a.mailto-link', 'href', 'mailto:test@email.com');
     $mailto_link = $this->getSession()->getPage()->find('css', 'a.mailto-link');
     $this->assertNotNull($mailto_link, 'The mailto link should exist on the page.');
     $this->assertEquals(
