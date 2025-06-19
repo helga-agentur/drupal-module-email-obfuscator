@@ -6,7 +6,6 @@ namespace Drupal\Tests\email_obfuscator\Functional;
 
 use Drupal\Tests\BrowserTestBase;
 use Drupal\Tests\email_obfuscator\Unit\EmailObfuscatorTest as EmailObfuscatorUnitTest;
-use PHPUnit\Framework\Attributes\Group;
 
 /**
  * Tests the email obfuscation functionality in a browser context.
