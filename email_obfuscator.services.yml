@@ -1,9 +1,9 @@
 services:
-  email_obfuscator.middleware:
-    class: Drupal\email_obfuscator\EmailObfuscatorMiddleware
-    arguments: [ '@email_obfuscator.service' ]
-    tags:
-      - { name: http_middleware, priority: 130 }
-
   email_obfuscator.service:
     class: Drupal\email_obfuscator\EmailObfuscatorService
+
+  email_obfuscator.response_filter:
+    class: Drupal\email_obfuscator\EventSubscriber\EmailObfuscatorResponseFilter
+    arguments: ['@email_obfuscator.service', '@router.no_access_checks', '@router.admin_context']
+    tags:
+      - { name: event_subscriber }
