@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\email_obfuscator\Functional;
 
+use Drupal\Core\Url;
 use Drupal\Tests\BrowserTestBase;
 use Drupal\Tests\email_obfuscator\Unit\EmailObfuscatorTest as EmailObfuscatorUnitTest;
 
@@ -25,9 +26,9 @@ final class EmailObfuscatorBrowserTest extends BrowserTestBase {
   protected static $modules = ['email_obfuscator_test_controller'];
 
   /**
-   * The URL of the controller that returns the content verbatim.
+   * The route of the controller that returns the content verbatim.
    */
-  protected static $verbatimControllerUrl = '/email-obfuscator-test/verbatim-respond';
+  protected static $verbatimControllerRoute = 'email_obfuscator_test.verbatim_respond';
 
   /**
    * Tests the email obfuscation functionality in a browser context.
@@ -43,10 +44,32 @@ final class EmailObfuscatorBrowserTest extends BrowserTestBase {
     // This allows testing the email obfuscation functionality
     // in a browser context, simulating how it would be rendered
     // in a real Drupal page. 
-    $response_content = $this->drupalGet(self::$verbatimControllerUrl,
+    $response_content = $this->drupalGet($this->getVerbatimControllerUrl(),
       ['query' => ['content' => $content]]);
     $this->assertSame($expected, $response_content,
       "The email obfuscation did not match the expected output for case: $content");
+  }
+
+  /**
+   * Tests the whitelisting functionality of the email obfuscation.
+   * 
+   * i.e. the content should be unobfuscated when the route is whitelisted.
+   *
+   * @param string $content
+  *
+  * @dataProvider dataProviderForTestEmailObfuscationProxy
+  */
+  public function testWhitelisting(string $content): void {
+    $settings['settings']['email_obfuscator']['route_whitelist'] = (object) [
+      'value' => [self::$verbatimControllerRoute],
+      'required' => TRUE,
+    ];
+    $this->writeSettings($settings);
+
+    $response_content = $this->drupalGet($this->getVerbatimControllerUrl(),
+      ['query' => ['content' => $content]]);
+    $this->assertSame($content, $response_content,
+      "Despite the whitelisting functionality, emails were obfuscated");
   }
 
   /**
@@ -60,6 +83,13 @@ final class EmailObfuscatorBrowserTest extends BrowserTestBase {
    */
   public static function dataProviderForTestEmailObfuscationProxy(): \Generator {
     return EmailObfuscatorUnitTest::dataProviderForTestEmailObfuscation();
+  }
+
+  /**
+   * Returns the URL of the verbatim controller.
+   */
+  protected function getVerbatimControllerUrl(): string {
+    return Url::fromRoute(self::$verbatimControllerRoute, [], ['absolute' => FALSE])->toString();
   }
 
 }
