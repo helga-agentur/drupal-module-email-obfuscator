@@ -57,11 +57,10 @@ final class EmailObfuscatorBrowserTest extends BrowserTestBase {
    * i.e. the content should be unobfuscated when the route is whitelisted.
    *
    * @param string $content
-   * @param string $expected
-   *
-   * @dataProvider dataProviderForTestEmailObfuscationProxy
-   */
-  public function testWhitelisting(string $content, string $expected): void {
+  *
+  * @dataProvider dataProviderForTestEmailObfuscationProxy
+  */
+  public function testWhitelisting(string $content): void {
     $settings['settings']['email_obfuscator']['route_whitelist'] = (object) [
       'value' => [self::$verbatimControllerRoute],
       'required' => TRUE,
