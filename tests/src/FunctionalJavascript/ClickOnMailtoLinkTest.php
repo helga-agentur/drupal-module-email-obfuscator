@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Drupal\Tests\email_obfuscator\FunctionalJavascript;
 
 use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
-use PHPUnit\Framework\Attributes\Group;
+use Drupal\Tests\email_obfuscator\EmailObfuscatorTestsTrait;
 
 /**
  * Tests the JavaScript functionality of the Email Obfuscator module.
@@ -13,6 +13,8 @@ use PHPUnit\Framework\Attributes\Group;
  * @group email_obfuscator
  */
 final class ClickOnMailtoLinkTest extends WebDriverTestBase {
+
+  use EmailObfuscatorTestsTrait;
 
   /**
    * {@inheritdoc}
@@ -25,9 +27,9 @@ final class ClickOnMailtoLinkTest extends WebDriverTestBase {
   protected static $modules = ['email_obfuscator_test_controller'];
 
   /**
-   * The URL of the controller that returns the content verbatim.
+   * The route of the controller that returns the content verbatim.
    */
-  protected static $verbatimControllerUrl = '/email-obfuscator-test/verbatim-respond';
+  protected static $verbatimControllerRoute = 'email_obfuscator_test.verbatim_respond';
 
   /**
    * Tests clicking on a mailto: link.
@@ -39,7 +41,7 @@ final class ClickOnMailtoLinkTest extends WebDriverTestBase {
    */
   public function testRevertOnLinkClick(): void {
     // Navigate to the test page.
-    $this->drupalGet(self::$verbatimControllerUrl, [
+    $this->drupalGet($this->getUrlForRoute(self::$verbatimControllerRoute), [
       'query' => ['content' => '<a class="mailto-link" href="mailto:test@email.com">Click here to email</a>']]);
 
     $page_html = $this->getSession()->getPage()->getHtml();

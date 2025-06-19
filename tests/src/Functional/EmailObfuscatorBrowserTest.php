@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\email_obfuscator\Functional;
 
-use Drupal\Core\Url;
 use Drupal\Tests\BrowserTestBase;
+use Drupal\Tests\email_obfuscator\EmailObfuscatorTestsTrait;
 use Drupal\Tests\email_obfuscator\Unit\EmailObfuscatorTest as EmailObfuscatorUnitTest;
 
 /**
@@ -14,6 +14,8 @@ use Drupal\Tests\email_obfuscator\Unit\EmailObfuscatorTest as EmailObfuscatorUni
  * @group email_obfuscator
  */
 final class EmailObfuscatorBrowserTest extends BrowserTestBase {
+
+  use EmailObfuscatorTestsTrait;
 
   /**
    * {@inheritdoc}
@@ -49,7 +51,7 @@ final class EmailObfuscatorBrowserTest extends BrowserTestBase {
     // This allows testing the email obfuscation functionality
     // in a browser context, simulating how it would be rendered
     // in a real Drupal page. 
-    $response_content = $this->drupalGet($this->getUrlForController(self::$verbatimControllerRoute),
+    $response_content = $this->drupalGet($this->getUrlForRoute(self::$verbatimControllerRoute),
       ['query' => ['content' => $content]]);
     $this->assertSame($expected, $response_content,
       "The email obfuscation did not match the expected output for anonymous users, case: $content");
@@ -65,7 +67,7 @@ final class EmailObfuscatorBrowserTest extends BrowserTestBase {
    */
   public function testVerbatimSymfonyResponseAuth(string $content, string $expected): void {
     $this->drupalLogin($this->drupalCreateUser());
-    $response_content = $this->drupalGet($this->getUrlForController(self::$verbatimControllerRoute),
+    $response_content = $this->drupalGet($this->getUrlForRoute(self::$verbatimControllerRoute),
       ['query' => ['content' => $content]]);
     $this->assertSame($expected, $response_content,
       "The email obfuscation did not match the expected output for authenticated users, case: $content");
@@ -86,7 +88,7 @@ final class EmailObfuscatorBrowserTest extends BrowserTestBase {
    */
   public function testVerbatimSymfonyResponseAdmin(string $content, string $expected): void {
     $this->drupalLogin($this->drupalCreateUser());
-    $response_content = $this->drupalGet($this->getUrlForController(self::$verbatimControllerAdminRoute),
+    $response_content = $this->drupalGet($this->getUrlForRoute(self::$verbatimControllerAdminRoute),
       ['query' => ['content' => $content]]);
     $this->assertSame($content, $response_content,
       "The email obfuscation should not have modified the content for admin routes: $response_content");
@@ -108,7 +110,7 @@ final class EmailObfuscatorBrowserTest extends BrowserTestBase {
     ];
     $this->writeSettings($settings);
 
-    $response_content = $this->drupalGet($this->getUrlForController(self::$verbatimControllerRoute),
+    $response_content = $this->drupalGet($this->getUrlForRoute(self::$verbatimControllerRoute),
       ['query' => ['content' => $content]]);
     $this->assertSame($content, $response_content,
       "Despite the whitelisting functionality, emails were obfuscated");
@@ -125,25 +127,6 @@ final class EmailObfuscatorBrowserTest extends BrowserTestBase {
    */
   public static function dataProviderForTestEmailObfuscationProxy(): \Generator {
     return EmailObfuscatorUnitTest::dataProviderForTestEmailObfuscation();
-  }
-
-  /**
-   * Returns a URL for the given route.
-   * 
-   * This is used to get the URL of the controller that returns
-   * the content verbatim, which is then tested for email obfuscation.
-   * The URL can be absolute or relative, depending on the $absolute parameter.
-   * 
-   * @param string $route
-   *   The route name of the controller.
-   * @param bool $absolute
-   *   Whether to return an absolute URL or a relative one.
-   *   Defaults to FALSE, which returns a relative URL.
-   * @return string
-   *   The URL of the controller that returns the content verbatim.
-   */
-  protected function getUrlForController(string $route, bool $absolute = FALSE): string {
-    return Url::fromRoute($route, [], ['absolute' => $absolute])->toString();
   }
 
 }
