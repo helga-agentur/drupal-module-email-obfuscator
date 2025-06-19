@@ -32,13 +32,6 @@ final class EmailObfuscatorBrowserTest extends BrowserTestBase {
   protected static $verbatimControllerRoute = 'email_obfuscator_test.verbatim_respond';
 
   /**
-   * {@inheritdoc}
-   */
-  protected function setUp(): void {
-    parent::setUp();
-  }
-
-  /**
    * Tests the email obfuscation functionality in a browser context.
    * 
    * @param string $content

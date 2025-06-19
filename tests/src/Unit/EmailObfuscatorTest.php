@@ -40,11 +40,16 @@ class EmailObfuscatorTest extends UnitTestCase {
    *
    * @dataProvider dataProviderForTestEmailObfuscation
    */
-  public function testEmailInText(string $content, string $expected): void {
+  public function testEmailInText(string $content, string $expected, string $expectedWithoutDataNoSnippet): void {
     $this->assertSame(
       $expected,
       $this->emailObfuscator->obfuscateEmails($content),
-      "The email obfuscation did not match the expected output for case: $content"
+      "The email obfuscation did not match the expected output (default case): $expected"
+    );
+    $this->assertSame(
+      $expectedWithoutDataNoSnippet,
+      $this->emailObfuscator->obfuscateEmails($content, FALSE),
+      "The email obfuscation did not match the expected output (without data-nosnippet): $expectedWithoutDataNoSnippet"
     );
   }
 
