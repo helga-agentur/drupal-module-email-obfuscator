@@ -30,9 +30,14 @@ final class ClickOnMailtoLinkTest extends WebDriverTestBase {
   protected static $verbatimControllerUrl = '/email-obfuscator-test/verbatim-respond';
 
   /**
-   * Test callback.
+   * Tests clicking on a mailto: link.
+   * 
+   * This test ensures that the mailto link is obfuscated
+   * before clicking and un-obfuscated after clicking.
+   * It simulates a user clicking on a mailto link and checks
+   * the HTML content of the page before and after the click.
    */
-  public function testSomething(): void {
+  public function testRevertOnLinkClick(): void {
     // Navigate to the test page.
     $this->drupalGet(self::$verbatimControllerUrl, [
       'query' => ['content' => '<a class="mailto-link" href="mailto:test@email.com">Click here to email</a>']]);
