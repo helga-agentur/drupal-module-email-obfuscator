@@ -1,8 +1,12 @@
 {
-    "name": "drupal/email-obfuscator",
+    "name": "drupal/email_obfuscator",
     "description": "Obfuscate emails any and everywhere",
     "type": "drupal-module",
     "license": "GPL-2.0-or-later",
+    "homepage": "https://www.drupal.org/project/email_obfuscator/",    
+    "support": {
+        "issues": "https://www.drupal.org/project/issues/email_obfuscator/"
+    },
     "authors": [
         {
             "name": "Hudson Muff",
